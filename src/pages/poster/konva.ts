@@ -1,6 +1,7 @@
 import Konva from "konva"
 import { LoadImage } from "./util"
 
+// 初始化
 export const InitKonva = async (
   backgroundUrl: string,
   querySelector: string
@@ -21,6 +22,7 @@ export const InitKonva = async (
   return stage
 }
 
+// 画背景
 export const RenderBackground = async (
   backgroundUrl: string,
   scale: number = 1
