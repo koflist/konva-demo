@@ -5,7 +5,7 @@ import { LoadImage } from "./util"
 export const InitKonva = async (
   backgroundUrl: string,
   querySelector: string
-): Promise<Konva.Stage> => {
+): Promise<[Konva.Stage, Konva.Layer]> => {
   const scale = 0.4
   const KonvaBgImage = await RenderBackground(backgroundUrl, scale)
 
@@ -19,7 +19,7 @@ export const InitKonva = async (
   layer.add(KonvaBgImage)
   stage.add(layer)
 
-  return stage
+  return [stage, layer]
 }
 
 // 画背景

@@ -1,37 +1,65 @@
-export enum WidgetType {
+export enum WidgetKind {
+  unset,
   avatar,
-  qrcode
+  qrcode,
+  text
 }
 
-export interface IBaseRender {
+// Widget: 渲染配置定义
+export type RenderType<T extends WidgetKind, AppendObject = unknown> = {
   x: number
   y: number
-  type: WidgetType
-}
+  type: T
+} & AppendObject
 
-export type BaseDataType = {
-  value?: string
-  default: string
-}
-export type BaseRuntimeData<T extends string[]> = {}
-
-const a: BaseRuntimeData<["av"]> = {
-  0: {
-    value: "123",
-    default: "223"
+// Widget: 注入数据定义
+export type InjectType<T> = {
+  [K in keyof T]: {
+    value?: T[K]
+    default: T[K]
   }
 }
 
-export interface IAvatarRender extends IBaseRender {
+// Widget定义
+export type WidgetType<T extends WidgetKind, DataKeys = unknown, AppendObject = unknown> = {
+  inject: InjectType<DataKeys>
+  render: RenderType<T, AppendObject>
+}
+
+// Widget 头像
+type AvatarExtraRender = {
   r: number
 }
-
-export interface IAvatarRuntimeData {
-  avatar: {
-    value?: string
-    default: string
-  }
+type AvatarInjectData = {
+  image: string
 }
+export type AvatarWidget = WidgetType<WidgetKind.avatar, AvatarInjectData, AvatarExtraRender>
 
-export type TAvatarRender = IAvatarRender & { type: WidgetType.avatar }
-export type TAvatarRuntimData = BaseRuntimeData<["avatar"]>
+// Widget 二维码
+type QrcodeExtraData = {
+  url: string
+  query: string[]
+}
+type QrcodeExtraRender = {
+  width: number
+}
+export type QrcodeWidget = WidgetType<WidgetKind.qrcode, QrcodeExtraData, QrcodeExtraRender>
+
+// Widget 文字
+type TextExtraData = {
+  text: string
+  dynamic: string[]
+}
+type TextExtraRender = {
+  width: number
+  height: number
+}
+export type TextWidget = WidgetType<WidgetKind.text, TextExtraData, TextExtraRender>
+
+class Widget {
+  x: number = 0
+  y: number = 0
+  type: WidgetKind = WidgetKind.unset
+
+  constructor() {}
+}
