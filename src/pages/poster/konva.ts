@@ -16,6 +16,7 @@ export const InitKonva = async (
   })
 
   const layer = new Konva.Layer()
+  layer.addName("rootlayer")
   layer.add(KonvaBgImage)
   stage.add(layer)
 

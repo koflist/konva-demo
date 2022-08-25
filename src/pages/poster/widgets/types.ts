@@ -55,11 +55,3 @@ type TextExtraRender = {
   height: number
 }
 export type TextWidget = WidgetType<WidgetKind.text, TextExtraData, TextExtraRender>
-
-class Widget {
-  x: number = 0
-  y: number = 0
-  type: WidgetKind = WidgetKind.unset
-
-  constructor() {}
-}

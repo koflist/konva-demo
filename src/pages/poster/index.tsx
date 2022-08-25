@@ -1,11 +1,13 @@
 import { FC, useEffect } from "react"
 import { InitKonva } from "./konva"
-import { createAvatar } from "./widgets/avatar"
-import { createQrcode } from "./widgets/qrcode"
-import { createText } from "./widgets/text"
-import { AvatarWidget, QrcodeWidget, TextWidget, WidgetKind } from "./widgets/types"
+
+import AvatarWidget from "../poster2/widgets/avatar"
+import QrcodeWidget from "../poster2/widgets/qrcode"
+import TextWidget from "../poster2/widgets/text"
 
 const background = "https://conan-online.fbcontent.cn/aries-oss-resource/web-assets/1802112_nnt.png"
+
+const widgetData = [{}]
 
 const PosterPage: FC = () => {
   useEffect(() => {
@@ -14,70 +16,52 @@ const PosterPage: FC = () => {
 
   const Init = async () => {
     const [stage, layer] = await InitKonva(background, "#poster-attach")
-    const avatar: AvatarWidget = {
-      render: {
-        x: 30,
-        y: 30,
-        r: 30,
-        type: WidgetKind.avatar
-      },
-      inject: {
-        image: {
-          value: "",
-          default: "https://conan-online.fbcontent.cn/aries-oss-resource/web-assets/8706701_1do.png"
-        }
-      }
-    }
 
-    const qrcode: QrcodeWidget = {
+    const qrcode = new QrcodeWidget({
       render: {
         x: 310,
         y: 670,
-        width: 100,
-        type: WidgetKind.qrcode
+        width: 100
       },
       inject: {
-        url: {
-          value: "",
-          default: "https://www.baidu.com"
-        },
-        query: {
-          value: [],
-          default: []
-        }
+        url: "https://www.baidu.com?userId={placeholder1}",
+        query: []
       }
-    }
+    })
 
-    const textWidget: TextWidget = {
+    qrcode.renderFinish().then((shape) => {
+      layer.add(shape)
+    })
+
+    const text = new TextWidget({
       render: {
         x: 60,
         y: 240,
         width: 50,
-        height: 50,
-        type: WidgetKind.text
+        height: 50
       },
       inject: {
-        text: {
-          value: "",
-          default: "hello world"
-        },
-        dynamic: {
-          value: [],
-          default: []
-        }
+        text: "hello world",
+        dynamic: []
       }
-    }
-
-    createAvatar(avatar).then((group) => {
-      layer.add(group)
     })
 
-    createQrcode(qrcode).then((widget) => {
-      layer.add(widget)
+    text.renderFinish().then((shape) => {
+      layer.add(shape)
     })
 
-    createText(textWidget).then((widget) => {
-      layer.add(widget)
+    const avatar = new AvatarWidget({
+      render: {
+        x: 100,
+        y: 100,
+        r: 30
+      },
+      inject: {
+        image: "https://conan-online.fbcontent.cn/aries-oss-resource/web-assets/8706701_1do.png"
+      }
+    })
+    avatar.renderFinish().then((shape) => {
+      layer.add(shape)
     })
   }
 
