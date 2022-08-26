@@ -24,10 +24,12 @@ export type WidgetConfig<ExtraRender = unknown, ExtraInject = unknown> = {
   inject: InjectType<ExtraInject>
 }
 
+export type WidgetShape = Konva.Shape | Konva.Group
+
 // Widget.Class 定义
 export abstract class BaseWidget<
   Config extends WidgetConfig = WidgetConfig,
-  Shape extends Konva.Shape | Konva.Group = Konva.Shape
+  Shape extends WidgetShape = Konva.Shape
 > {
   // property
   public readonly type: WidgetKind

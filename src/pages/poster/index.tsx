@@ -1,23 +1,15 @@
 import { FC, useEffect } from "react"
 import { InitKonva } from "./konva"
 
-import AvatarWidget from "./widgets/avatar"
-import QrcodeWidget from "./widgets/qrcode"
-import TextWidget from "./widgets/text"
+import { WidgetKind } from "./widgets/base"
+import { renderWidget, WidgetDataType } from "./widgets/index"
 
 const background = "https://conan-online.fbcontent.cn/aries-oss-resource/web-assets/1802112_nnt.png"
 
-const widgetData = [{}]
-
-const PosterPage: FC = () => {
-  useEffect(() => {
-    Init()
-  }, [])
-
-  const Init = async () => {
-    const [stage, layer] = await InitKonva(background, "#poster-attach")
-
-    const qrcode = new QrcodeWidget({
+const widgetData: WidgetDataType[] = [
+  {
+    type: WidgetKind.qrcode,
+    config: {
       render: {
         x: 310,
         y: 670,
@@ -27,13 +19,11 @@ const PosterPage: FC = () => {
         url: "https://www.baidu.com?userId={placeholder1}",
         query: []
       }
-    })
-
-    qrcode.renderFinish().then((shape) => {
-      layer.add(shape)
-    })
-
-    const text = new TextWidget({
+    }
+  },
+  {
+    type: WidgetKind.text,
+    config: {
       render: {
         x: 60,
         y: 240,
@@ -44,13 +34,11 @@ const PosterPage: FC = () => {
         text: "hello world",
         dynamic: []
       }
-    })
-
-    text.renderFinish().then((shape) => {
-      layer.add(shape)
-    })
-
-    const avatar = new AvatarWidget({
+    }
+  },
+  {
+    type: WidgetKind.avatar,
+    config: {
       render: {
         x: 100,
         y: 100,
@@ -59,10 +47,21 @@ const PosterPage: FC = () => {
       inject: {
         image: "https://conan-online.fbcontent.cn/aries-oss-resource/web-assets/8706701_1do.png"
       }
-    })
-    avatar.renderFinish().then((shape) => {
-      layer.add(shape)
-    })
+    }
+  }
+]
+
+const PosterPage: FC = () => {
+  useEffect(() => {
+    Init()
+  }, [])
+
+  const Init = async () => {
+    const [stage, layer] = await InitKonva(background, "#poster-attach")
+
+    for (const data of widgetData) {
+      renderWidget(data).then((shape) => shape && layer.add(shape))
+    }
   }
 
   return <div id="poster-attach"></div>

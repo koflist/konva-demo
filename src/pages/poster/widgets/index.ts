@@ -1,17 +1,22 @@
 import AvatarWidget, { AvatarWidgetConfig } from "./avatar"
-import { WidgetKind } from "./base"
-import { QrcodeWidgetConfig } from "./qrcode"
-import { TextWidgetConfig } from "./text"
+import { WidgetKind, WidgetShape } from "./base"
+import QrcodeWidget, { QrcodeWidgetConfig } from "./qrcode"
+import TextWidget, { TextWidgetConfig } from "./text"
 
-type WidgetDataType = {
+export type WidgetDataType = {
   type: WidgetKind
   config: AvatarWidgetConfig | QrcodeWidgetConfig | TextWidgetConfig
 }
 
-const renderWidget = (data: WidgetDataType) => {
+export const renderWidget = (data: WidgetDataType): Promise<WidgetShape | null> => {
   switch (data.type) {
     case WidgetKind.avatar:
-      const widget = new AvatarWidget(data.config as AvatarWidgetConfig)
-      widget.renderFinish()
+      return new AvatarWidget(data.config as AvatarWidgetConfig).renderFinish()
+    case WidgetKind.qrcode:
+      return new QrcodeWidget(data.config as QrcodeWidgetConfig).renderFinish()
+    case WidgetKind.text:
+      return new TextWidget(data.config as TextWidgetConfig).renderFinish()
+    default:
+      return Promise.resolve(null)
   }
 }

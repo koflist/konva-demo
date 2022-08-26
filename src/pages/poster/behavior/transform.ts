@@ -26,10 +26,8 @@ const registerTransformEvent = (stage: Konva.Stage) => {
       currentTransformer.nodes([])
     }
 
-    console.log(transformShapes)
-    console.log(target)
     const shape = transformShapes.find((it) => it === target)
-    console.log(shape)
+
     if (shape) {
       currentTransformer = rectTransformer
       currentTransformer.nodes([shape])
