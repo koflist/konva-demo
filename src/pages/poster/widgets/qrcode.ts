@@ -1,39 +1,41 @@
 import QRCode from "easyqrcodejs"
 import Konva from "konva"
 import { CreateImage, LoadImage } from "../util"
-import { QrcodeWidget, WidgetKind } from "./types"
+import { BaseWidget, WidgetConfig, WidgetKind } from "./base"
 
-const DefaultQrcodeWidget: QrcodeWidget = {
-  render: {
-    x: 0,
-    y: 0,
-    width: 0,
-    type: WidgetKind.qrcode
-  },
-  inject: {
-    url: {
-      value: "",
-      default: "https://www.baidu.com"
-    },
-    query: {
-      value: [],
-      default: []
-    }
-  }
+type ExtraRender = {
+  width: number
 }
+type ExtraInject = {
+  url: string
+  query: string[]
+}
+export type QrcodeWidgetConfig = WidgetConfig<ExtraRender, ExtraInject>
 
-export const createQrcode = async (props: QrcodeWidget = DefaultQrcodeWidget) => {
-  const { render, inject } = props
+export default class QrcodeWidget extends BaseWidget<QrcodeWidgetConfig, Konva.Image> {
+  constructor(config: QrcodeWidgetConfig) {
+    super(WidgetKind.qrcode, config)
+  }
 
-  return new Promise((resolve, reject) => {
-    new QRCode(CreateImage(), {
-      text: inject.url.value || inject.url.default,
-      width: render.width,
-      height: render.width,
-      onRenderingEnd: (_: any, dataURL: string) => resolve(dataURL)
+  private createQrcode(): Promise<string> {
+    const { render, inject } = this.config
+
+    return new Promise((resolve, reject) => {
+      new QRCode(CreateImage(), {
+        text: inject.url,
+        width: render.width,
+        height: render.width,
+        onRenderingEnd: (_: any, dataURL: string) => resolve(dataURL)
+      })
     })
-  }).then(async (dataURL: any) => {
+  }
+
+  override async renderShape() {
+    const { render } = this.config
+
+    const dataURL = await this.createQrcode()
     const image = await LoadImage(dataURL)
+
     return new Konva.Image({
       x: render.x,
       y: render.y,
@@ -41,5 +43,5 @@ export const createQrcode = async (props: QrcodeWidget = DefaultQrcodeWidget) =>
       height: render.width,
       image: image
     })
-  })
+  }
 }

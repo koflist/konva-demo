@@ -1,36 +1,31 @@
 import Konva from "konva"
-import { TextWidget, WidgetKind } from "./types"
+import { BaseWidget, WidgetConfig, WidgetKind } from "./base"
 
-const DefaultTextWidget: TextWidget = {
-  render: {
-    x: 0,
-    y: 0,
-    width: 100,
-    height: 100,
-    type: WidgetKind.text
-  },
-  inject: {
-    text: {
-      value: "",
-      default: "hello world"
-    },
-    dynamic: {
-      value: [],
-      default: []
-    }
-  }
+type ExtraRender = {
+  width: number
+  height: number
 }
+type ExtraInject = {
+  text: string
+  dynamic: string[]
+}
+export type TextWidgetConfig = WidgetConfig<ExtraRender, ExtraInject>
 
-export const createText = async (props: TextWidget = DefaultTextWidget) => {
-  const { render, inject } = props
+export default class TextWidget extends BaseWidget<TextWidgetConfig, Konva.Text> {
+  constructor(config: TextWidgetConfig) {
+    super(WidgetKind.text, config)
+  }
 
-  return new Konva.Text({
-    draggable: true,
-    text: inject.text.value || inject.text.default,
-    x: render.x,
-    y: render.y,
-    fontSize: 20,
-    width: render.width,
-    height: render.height
-  })
+  override async renderShape() {
+    const { render, inject } = this.config
+
+    return new Konva.Text({
+      text: inject.text,
+      x: render.x,
+      y: render.y,
+      fontSize: 20,
+      width: render.width,
+      height: render.height
+    })
+  }
 }

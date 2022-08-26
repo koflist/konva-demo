@@ -1,43 +1,40 @@
 import Konva from "konva"
 import { LoadImage } from "../util"
-import { AvatarWidget, WidgetKind } from "./types"
+import { BaseWidget, WidgetConfig, WidgetKind } from "./base"
 
-const DefaultAvatarWidget: AvatarWidget = {
-  render: {
-    x: 0,
-    y: 0,
-    r: 0,
-    type: WidgetKind.avatar
-  },
-  inject: {
-    image: {
-      value: "",
-      default: "https://conan-online.fbcontent.cn/aries-oss-resource/web-assets/8706701_1do.png"
-    }
-  }
+type ExtraRender = {
+  r: number
 }
+type ExtraInject = {
+  image: string
+}
+export type AvatarWidgetConfig = WidgetConfig<ExtraRender, ExtraInject>
 
-export const createAvatar = async (
-  props: AvatarWidget = DefaultAvatarWidget
-): Promise<Konva.Group> => {
-  const { render, inject } = props
+export default class AvatarWidget extends BaseWidget<AvatarWidgetConfig, Konva.Group> {
+  constructor(config: AvatarWidgetConfig) {
+    super(WidgetKind.avatar, config)
+  }
 
-  const group = new Konva.Group({
-    clipFunc(context) {
-      context.arc(render.x, render.y, render.r, 0, 2 * Math.PI, false)
-    }
-  })
+  override async renderShape() {
+    const { render, inject } = this.config
 
-  const imageUrl = inject.image.value || inject.image.default
-  const avatarImage = await LoadImage(imageUrl)
-  const konvaImage = new Konva.Image({
-    x: render.x - render.r,
-    y: render.y - render.r,
-    width: render.r * 2,
-    height: render.r * 2,
-    image: avatarImage
-  })
+    const group = new Konva.Group({
+      clipFunc(context) {
+        context.arc(render.x, render.y, render.r, 0, 2 * Math.PI, false)
+      }
+    })
 
-  group.add(konvaImage)
-  return group
+    const imageUrl = inject.image
+    const avatarImage = await LoadImage(imageUrl)
+    const konvaImage = new Konva.Image({
+      x: render.x - render.r,
+      y: render.y - render.r,
+      width: render.r * 2,
+      height: render.r * 2,
+      image: avatarImage
+    })
+
+    group.add(konvaImage)
+    return group
+  }
 }

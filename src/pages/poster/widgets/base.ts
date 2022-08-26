@@ -49,10 +49,6 @@ export abstract class BaseWidget<
     return this.promiseRender
   }
 
-  get rendered(): boolean {
-    return !!this.shape
-  }
-
   // 渲染函数会在构造函数中调用,在renderFinish中通知渲染结果
   protected abstract renderShape(): Promise<Shape>
 }

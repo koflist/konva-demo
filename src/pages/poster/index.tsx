@@ -1,9 +1,9 @@
 import { FC, useEffect } from "react"
 import { InitKonva } from "./konva"
 
-import AvatarWidget from "../poster2/widgets/avatar"
-import QrcodeWidget from "../poster2/widgets/qrcode"
-import TextWidget from "../poster2/widgets/text"
+import AvatarWidget from "./widgets/avatar"
+import QrcodeWidget from "./widgets/qrcode"
+import TextWidget from "./widgets/text"
 
 const background = "https://conan-online.fbcontent.cn/aries-oss-resource/web-assets/1802112_nnt.png"
 

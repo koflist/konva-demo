@@ -1,4 +1,4 @@
-import { BaseWidget } from "@/pages/poster2/widgets/types"
+import { BaseWidget } from "@/pages/poster/widgets/base"
 import { Layer } from "konva/lib/Layer"
 import { Stage } from "konva/lib/Stage"
 
