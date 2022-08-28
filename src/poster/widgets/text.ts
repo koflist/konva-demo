@@ -18,7 +18,7 @@ export class TextWidget extends BaseWidget<WidgetType.text, TextWidgetConfig, Te
     super(config)
   }
 
-  override async renderShape() {
+  public override async renderShape() {
     const { render, inject } = this.config
 
     return new Text({
@@ -29,5 +29,21 @@ export class TextWidget extends BaseWidget<WidgetType.text, TextWidgetConfig, Te
       width: render.width,
       height: render.height
     })
+  }
+
+  public override toObject(): TextWidgetConfig {
+    return this.shape
+      ? {
+          type: this.type,
+          inject: this.config.inject,
+          render: {
+            x: this.shape.x(),
+            y: this.shape.y(),
+            width: this.shape.width() * this.shape.scaleX(),
+            height: this.shape.height() * this.shape.scaleY(),
+            fontSize: this.config.render.fontSize
+          }
+        }
+      : this.config
   }
 }

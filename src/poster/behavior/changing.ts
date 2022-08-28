@@ -14,13 +14,9 @@ export default class ChangingBehvior extends BaseBehavior {
       return false
     }
 
-    shape.on("rotateChange", () => {
-      console.log("here2")
+    shape.on("scaleXChange scaleYChange xChange yChange", () => {
+      console.log("here")
     })
-
-    // shape.on("scaleXChange scaleYChange xChange yChange", () => {
-    //   console.log("here")
-    // })
 
     return true
   }

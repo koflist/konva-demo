@@ -46,21 +46,17 @@ export class QrcodeWidget extends BaseWidget<WidgetType.qrcode, QrcodeWidgetConf
     })
   }
 
-  public override async toObject(): Promise<QrcodeWidgetConfig> {
-    await this.renderFinish()
-
-    if (this.shape) {
-      return {
-        type: this.type,
-        render: {
-          x: this.shape.x(),
-          y: this.shape.y(),
-          width: (this.shape.width() * this.shape.scaleX()) / 2
-        },
-        inject: this.config.inject
-      }
-    }
-
-    return this.config
+  public override toObject(): QrcodeWidgetConfig {
+    return this.shape
+      ? {
+          type: this.type,
+          inject: this.config.inject,
+          render: {
+            x: this.shape.x(),
+            y: this.shape.y(),
+            width: this.shape.width() * this.shape.scaleX()
+          }
+        }
+      : this.config
   }
 }

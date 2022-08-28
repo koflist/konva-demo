@@ -37,7 +37,7 @@ export abstract class BaseWidget<
 > {
   // property
   public readonly config: Config
-  public readonly type: WidgetType
+  public readonly type: T
   public shape: Shape | null = null
   public renderPromise: Promise<this>
 
@@ -64,8 +64,8 @@ export abstract class BaseWidget<
     return this.shape === shape
   }
 
-  // TODO: 导出当前时刻的渲染信息
-  public toObject(): any {}
+  // TODO:
+  public abstract toObject(): Config
 
   // 渲染函数会在构造函数中调用,在renderFinish中通知渲染结果
   protected abstract renderShape(): Promise<Shape>

@@ -45,7 +45,7 @@ export default class TransformBehvior extends BaseBehaivor {
 
     this.textTransformer = new Transformer({
       ...BaseTransformerConfig,
-      enabledAnchors: ["middle-left", "middle-right"],
+      enabledAnchors: ["bottom-center", "middle-right"],
       boundBoxFunc: (...args) => this.transformBoundary(...args)
     })
 
@@ -69,6 +69,7 @@ export default class TransformBehvior extends BaseBehaivor {
         text.on("transform", () => {
           text.setAttrs({
             width: Math.max(text.width() * text.scaleX(), textWidget.config.render.fontSize),
+            height: Math.max(text.height() * text.scaleY(), textWidget.config.render.fontSize),
             scaleX: 1,
             scaleY: 1
           })

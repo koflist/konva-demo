@@ -44,26 +44,21 @@ export class AvatarWidget extends BaseWidget<WidgetType.avatar, AvatarWidgetConf
     return group
   }
 
-  override async toObject(): Promise<AvatarWidgetConfig> {
-    await this.renderFinish()
-    if (!this.shape) {
-      return this.config
-    } else {
-      return {
-        type: this.type,
-        render: {
-          x: this.shape.x(),
-          y: this.shape.y(),
-          r: (this.shape.width() * this.shape.scaleX()) / 2
-        },
-        inject: {
-          image: this.config.inject.image
+  public override toObject(): AvatarWidgetConfig {
+    return this.shape
+      ? {
+          type: this.type,
+          inject: this.config.inject,
+          render: {
+            x: this.shape.x(),
+            y: this.shape.y(),
+            r: (this.shape.width() * this.shape.scaleX()) / 2
+          }
         }
-      }
-    }
+      : this.config
   }
 
-  override isMyShape(shape: WidgetShape): boolean {
+  public override isMyShape(shape: WidgetShape): boolean {
     return this.shape === shape || this.innerImgShape === shape
   }
 }
