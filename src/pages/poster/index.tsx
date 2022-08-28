@@ -1,15 +1,17 @@
-import { FC, useEffect } from "react"
-import { InitKonva } from "./konva"
+import { PosterBehavior } from "@/poster/behavior"
+import { WidgetType } from "@/poster/widgets"
+import { FC, useEffect, useMemo, useState } from "react"
+import KonvaPoster, { PosterConfig } from "../../poster/konva"
 
-import { WidgetKind } from "./widgets/base"
-import { renderWidget, WidgetDataType } from "./widgets/index"
-
-const background = "https://conan-online.fbcontent.cn/aries-oss-resource/web-assets/1802112_nnt.png"
-
-const widgetData: WidgetDataType[] = [
-  {
-    type: WidgetKind.qrcode,
-    config: {
+const posterConfig: PosterConfig = {
+  background: {
+    url: "https://conan-online.fbcontent.cn/aries-oss-resource/web-assets/1802112_nnt.png",
+    width: 544,
+    height: 968
+  },
+  widgets: [
+    {
+      type: WidgetType.qrcode,
       render: {
         x: 310,
         y: 670,
@@ -19,52 +21,60 @@ const widgetData: WidgetDataType[] = [
         url: "https://www.baidu.com?userId={placeholder1}",
         query: []
       }
-    }
-  },
-  {
-    type: WidgetKind.text,
-    config: {
+    },
+    {
+      type: WidgetType.text,
       render: {
         x: 60,
         y: 240,
         width: 50,
-        height: 50
+        height: 50,
+        fontSize: 20
       },
       inject: {
         text: "hello world",
         dynamic: []
       }
-    }
-  },
-  {
-    type: WidgetKind.avatar,
-    config: {
+    },
+    {
+      type: WidgetType.avatar,
       render: {
-        x: 100,
-        y: 100,
+        x: 0,
+        y: 0,
         r: 30
       },
       inject: {
         image: "https://conan-online.fbcontent.cn/aries-oss-resource/web-assets/8706701_1do.png"
       }
     }
-  }
-]
+  ]
+}
 
 const PosterPage: FC = () => {
+  const [dataURL, setDataURL] = useState<string>("")
+
   useEffect(() => {
     Init()
   }, [])
 
-  const Init = async () => {
-    const [stage, layer] = await InitKonva(background, "#poster-attach")
+  const img = useMemo(() => {
+    return <img src={dataURL} alt="" />
+  }, [dataURL])
 
-    for (const data of widgetData) {
-      renderWidget(data).then((shape) => shape && layer.add(shape))
-    }
+  const Init = async () => {
+    const poster = new KonvaPoster(posterConfig)
+    poster.renderFinsh().then(() => {
+      poster.stage.setContainer("#container")
+      const behavior = new PosterBehavior(poster)
+      behavior.attach(poster.childrenWidgets)
+    })
   }
 
-  return <div id="poster-attach"></div>
+  return (
+    <div id="poster-attach">
+      <div id="container"></div>
+    </div>
+  )
 }
 
 export default PosterPage
