@@ -24,7 +24,6 @@ const BaseTransformerConfig: TransformerConfig = {
 
 export default class TransformBehvior extends BaseBehaivor {
   private layer: Layer
-  private widgetList: WidgetKind[]
 
   private currentTransformer: Transformer | null
   private rectTransformer: Transformer
@@ -33,7 +32,6 @@ export default class TransformBehvior extends BaseBehaivor {
   constructor(poster: KonvaPoster) {
     super(poster)
 
-    this.widgetList = []
     this.currentTransformer = null
     this.layer = new Layer()
     this.poster.stage.add(this.layer)
@@ -58,8 +56,6 @@ export default class TransformBehvior extends BaseBehaivor {
     if (!widget.shape) {
       return false
     }
-
-    this.widgetList.push(widget)
 
     // 文字组件:不缩放|改变尺寸影响文字换行
     if (widget.type === WidgetType.text) {
@@ -117,19 +113,20 @@ export default class TransformBehvior extends BaseBehaivor {
 
   private transformListening() {
     const { stage, backgroundShape } = this.poster
+
     stage.add(this.layer)
     stage.on("pointerdown", (event) => {
-      const target = event.target
+      const shape = event.target
 
       // 点击背景
-      if (target === backgroundShape) {
+      if (shape === backgroundShape) {
         this.transformBlur()
         return
       }
 
       // 点击组件
-      const widget = this.widgetList.find((widget) => widget.isMyShape(target))
-      if (widget && widget.shape) {
+      const widget = shape.getAttr("widget") as WidgetKind | undefined
+      if (widget) {
         this.transformBlur()
 
         if (widget.type === WidgetType.text) {

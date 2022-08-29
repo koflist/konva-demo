@@ -1,8 +1,8 @@
 import KonvaPoster from "../konva"
-import { WidgetKind } from "../widgets"
+import { WidgetConfig, WidgetKind } from "../widgets"
 import BaseBehavior from "./base"
 
-export default class ChangingBehvior extends BaseBehavior {
+export default class UpdatingBehvior extends BaseBehavior {
   constructor(poster: KonvaPoster) {
     super(poster)
   }
@@ -19,5 +19,15 @@ export default class ChangingBehvior extends BaseBehavior {
     })
 
     return true
+  }
+
+  public add() {}
+
+  public delete() {}
+
+  public update(config: WidgetConfig) {
+    if (!config.id) {
+      return false
+    }
   }
 }

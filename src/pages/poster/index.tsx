@@ -32,7 +32,7 @@ const posterConfig: PosterConfig = {
         fontSize: 20
       },
       inject: {
-        text: "hello world",
+        text: `100\n分钟`,
         dynamic: []
       }
     },
@@ -65,8 +65,7 @@ const PosterPage: FC = () => {
     const poster = new KonvaPoster(posterConfig)
     poster.renderFinsh().then(() => {
       poster.stage.setContainer("#container")
-      const behavior = new PosterBehavior(poster)
-      behavior.attach(poster.childrenWidgets)
+      new PosterBehavior(poster)
     })
   }
 

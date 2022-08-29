@@ -1,7 +1,7 @@
 import { Group } from "konva/lib/Group"
 import { Image as KonvaImage } from "konva/lib/shapes/Image"
 import { LoadImage } from "../../pages/poster/util"
-import { BaseWidget, WidgetConfig, WidgetShape, WidgetType } from "./base"
+import { BaseWidget, WidgetConfig, WidgetType } from "./base"
 
 type ExtraRender = {
   r: number
@@ -39,6 +39,7 @@ export class AvatarWidget extends BaseWidget<WidgetType.avatar, AvatarWidgetConf
       height: render.r * 2,
       image: avatarImage
     })
+    this.innerImgShape.setAttr("widget", this)
     group.add(this.innerImgShape)
 
     return group
@@ -56,9 +57,5 @@ export class AvatarWidget extends BaseWidget<WidgetType.avatar, AvatarWidgetConf
           }
         }
       : this.config
-  }
-
-  public override isMyShape(shape: WidgetShape): boolean {
-    return this.shape === shape || this.innerImgShape === shape
   }
 }

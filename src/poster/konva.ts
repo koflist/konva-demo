@@ -1,5 +1,5 @@
 import { Layer } from "konva/lib/Layer"
-import { Image as KonvaImage } from "konva/lib/shapes/Image"
+import { Image } from "konva/lib/shapes/Image"
 import { Stage } from "konva/lib/Stage"
 
 import { LoadImage } from "../pages/poster/util"
@@ -21,12 +21,17 @@ export type PosterConfig = {
   widgets: WidgetConfig[]
 }
 
+interface DestoryWidget {
+  (widget: WidgetKind): void
+  (id: number): void
+}
+
 export default class KonvaPoster {
   public readonly stage: Stage
   public readonly layer: Layer
 
-  public backgroundShape: KonvaImage | null
-  public childrenWidgets: WidgetKind[]
+  public backgroundShape: Image | null
+  public renderedWidgets: WidgetKind[]
 
   private config: PosterConfig
   private renderPromise: Promise<void>
@@ -34,7 +39,7 @@ export default class KonvaPoster {
   constructor(config: PosterConfig) {
     this.config = config
     this.backgroundShape = null
-    this.childrenWidgets = []
+    this.renderedWidgets = []
 
     this.layer = new Layer({
       name: "rootLayer"
@@ -47,17 +52,20 @@ export default class KonvaPoster {
     })
 
     this.stage.add(this.layer)
+
     this.renderPromise = this.render()
   }
 
+  // 海报渲染
   private async render(): Promise<void> {
     await this.renderBackground()
-    await this.renderWidgets()
+    await this.initRenderWidgets()
   }
 
+  // 渲染 背景图
   private async renderBackground() {
     const bgImage = await LoadImage(this.config.background.url)
-    const KonvaBgImage = new KonvaImage({
+    const KonvaBgImage = new Image({
       x: 0,
       y: 0,
       image: bgImage,
@@ -69,41 +77,69 @@ export default class KonvaPoster {
     this.layer.add(KonvaBgImage)
   }
 
-  private async renderWidgets() {
-    const p: Promise<WidgetKind>[] = this.config.widgets.map((config) => this.renderWidget(config))
-
-    return Promise.allSettled(p).then((statuses) => {
-      for (const item of statuses) {
-        if (item.status === "fulfilled") {
-          const widget = item.value
-          if (widget.shape) {
-            this.layer.add(widget.shape)
-            this.childrenWidgets.push(widget)
-          }
-        }
-      }
-    })
+  // 初始化渲染 widgetList
+  private async initRenderWidgets() {
+    const p: Promise<void>[] = this.config.widgets.map((config) => this.renderWidget(config))
+    return Promise.allSettled(p)
   }
 
-  private async renderWidget(widgetConfig: WidgetConfig): Promise<WidgetKind> {
-    const type = widgetConfig.type
+  // 渲染 widget
+  public renderWidget(config: WidgetConfig): Promise<void> {
+    const widget = this.createWidget(config)
+
+    if (!widget) {
+      return Promise.reject("没有找到指定的widget")
+    }
+
+    return widget
+      .renderFinish()
+      .then((widget) => {
+        if (widget.shape) {
+          this.layer.add(widget.shape)
+          this.renderedWidgets.push(widget)
+        } else {
+          throw new Error("没有渲染成功")
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        return Promise.reject("渲染失败")
+      })
+  }
+
+  // 创建 widget
+  public createWidget(config: WidgetConfig): WidgetKind | null {
+    const type = config.type
     switch (type) {
       case WidgetType.avatar:
-        return new AvatarWidget(widgetConfig).renderFinish()
+        return new AvatarWidget(config)
       case WidgetType.qrcode:
-        return new QrcodeWidget(widgetConfig).renderFinish()
+        return new QrcodeWidget(config)
       case WidgetType.text:
-        return new TextWidget(widgetConfig).renderFinish()
+        return new TextWidget(config)
       default:
-        return Promise.reject(`cannot find widget type of: ${type}`)
+        return null
+    }
+  }
+
+  // 删除 widget
+  public removeWidget(query: { widget?: WidgetKind; id?: number } = {}) {
+    let index: number = -1
+
+    if (query.widget) {
+      index = this.renderedWidgets.findIndex((it) => it === query.widget)
+    }
+    if (query.id) {
+      index = this.renderedWidgets.findIndex((it) => it.config.id === query.id)
+    }
+
+    if (index >= 0) {
+      this.renderedWidgets[index].shape?.destroy()
+      this.renderedWidgets.splice(index, 1)
     }
   }
 
   public async renderFinsh() {
     return this.renderPromise
   }
-
-  // public async attach(): Promise<void> {
-  //   attachDraggable()
-  // }
 }

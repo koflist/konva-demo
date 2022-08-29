@@ -1,26 +1,32 @@
 import KonvaPoster from "../konva"
 import { WidgetKind } from "../widgets"
 import BaseBehavior from "./base"
-import ChangingBehvior from "./changing"
 import DraggableBehvior from "./draggable"
+import UpdatingBehvior from "./management"
 import TransformBehvior from "./transform"
 
 export class PosterBehavior {
   private behaviorList: BaseBehavior[] = []
 
   constructor(poster: KonvaPoster) {
-    this.behaviorList = [
-      new TransformBehvior(poster),
-      new DraggableBehvior(poster),
-      new ChangingBehvior(poster)
-    ]
+    const transform = new TransformBehvior(poster)
+    const draggable = new DraggableBehvior(poster)
+    const updating = new UpdatingBehvior(poster)
+
+    this.behaviorList = [transform, draggable, updating]
+
+    for (const widget of poster.renderedWidgets) {
+      this.attach(widget)
+    }
   }
 
-  public attach(widgets: WidgetKind[] = []) {
+  public on() {}
+
+  public emit() {}
+
+  public attach(widget: WidgetKind) {
     for (const behavior of this.behaviorList) {
-      for (const item of widgets) {
-        behavior.attach(item)
-      }
+      behavior.attach(widget)
     }
   }
 }

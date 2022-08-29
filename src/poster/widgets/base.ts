@@ -1,4 +1,4 @@
-import Konva from "konva"
+import { Node } from "konva/lib/Node"
 
 // Widget.Type 定义
 export enum WidgetType {
@@ -21,36 +21,40 @@ export type InjectType<ExtraInject> = {
 
 // Widget.Config 定义
 export type WidgetConfig<T extends WidgetType, ExtraRender = unknown, ExtraInject = unknown> = {
+  id?: number
   type: T
   render: RenderType<ExtraRender>
   inject: InjectType<ExtraInject>
 }
 
 // Widget.Shape 定义
-export type WidgetShape = Konva.Node
+export type WidgetShape = Node
 
 // 抽象类 Widget.Class 定义
 export abstract class BaseWidget<
   T extends WidgetType,
-  Config extends WidgetConfig<T>,
-  Shape extends WidgetShape
+  TConfig extends WidgetConfig<T>,
+  TShape extends WidgetShape
 > {
   // property
-  public readonly config: Config
+  public readonly config: TConfig
   public readonly type: T
-  public shape: Shape | null = null
+  public shape: TShape | null
   public renderPromise: Promise<this>
 
-  constructor(config: Config) {
+  constructor(config: TConfig) {
     this.config = config
     this.type = config.type
+    this.shape = null
 
     this.renderPromise = this.renderShape()
-      .then((shape: Shape) => {
+      .then((shape: TShape) => {
         this.shape = shape
+        this.shape.setAttr("widget", this)
         return this
       })
       .catch((error) => {
+        this.shape = null
         console.log(error)
         return this
       })
@@ -60,13 +64,17 @@ export abstract class BaseWidget<
     return this.renderPromise
   }
 
-  public isMyShape(shape: WidgetShape): boolean {
-    return this.shape === shape
-  }
+  /**
+   * @func toObject
+   * @name abstract
+   * @desc 需要实现渲染的导出
+   */
+  public abstract toObject(): TConfig
 
-  // TODO:
-  public abstract toObject(): Config
-
-  // 渲染函数会在构造函数中调用,在renderFinish中通知渲染结果
-  protected abstract renderShape(): Promise<Shape>
+  /**
+   * @func renderShape
+   * @name abstract
+   * @desc 需要实现组件的渲染，会自动在构造函数中调用
+   */
+  protected abstract renderShape(): Promise<TShape>
 }
