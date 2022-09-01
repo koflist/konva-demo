@@ -3,14 +3,11 @@ import { Image as KonvaImage } from "konva/lib/shapes/Image"
 import { CreateImage, LoadImage } from "../../pages/poster/util"
 import { BaseWidget, WidgetConfig, WidgetType } from "./base"
 
-type ExtraRender = {
-  width: number
-}
 type ExtraInject = {
   url: string
   query: string[]
 }
-export type QrcodeWidgetConfig = WidgetConfig<WidgetType.qrcode, ExtraRender, ExtraInject>
+export type QrcodeWidgetConfig = WidgetConfig<WidgetType.qrcode, unknown, ExtraInject>
 
 // Widget.Qrcode
 export class QrcodeWidget extends BaseWidget<WidgetType.qrcode, QrcodeWidgetConfig, KonvaImage> {
@@ -25,19 +22,23 @@ export class QrcodeWidget extends BaseWidget<WidgetType.qrcode, QrcodeWidgetConf
       new QRCode(CreateImage(), {
         text: inject.url,
         width: render.width,
-        height: render.width,
+        height: render.height,
         onRenderingEnd: (_: any, dataURL: string) => resolve(dataURL)
       })
     })
   }
 
-  public override async renderShape() {
-    const { render } = this.config
+  protected override createShape(): KonvaImage {
+    return new KonvaImage({ image: undefined })
+  }
+
+  protected async renderShape(konvaImage: KonvaImage, config: QrcodeWidgetConfig) {
+    const { render } = config
 
     const dataURL = await this.createQrcode()
     const image = await LoadImage(dataURL)
 
-    return new KonvaImage({
+    konvaImage.setAttrs({
       x: render.x,
       y: render.y,
       width: render.width,
@@ -47,16 +48,15 @@ export class QrcodeWidget extends BaseWidget<WidgetType.qrcode, QrcodeWidgetConf
   }
 
   public override toObject(): QrcodeWidgetConfig {
-    return this.shape
-      ? {
-          type: this.type,
-          inject: this.config.inject,
-          render: {
-            x: this.shape.x(),
-            y: this.shape.y(),
-            width: this.shape.width() * this.shape.scaleX()
-          }
-        }
-      : this.config
+    return {
+      type: this.type,
+      inject: this.config.inject,
+      render: {
+        x: this.shape.x(),
+        y: this.shape.y(),
+        width: this.shape.width(),
+        rotation: this.shape.rotation()
+      }
+    }
   }
 }

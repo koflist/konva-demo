@@ -12,5 +12,5 @@ export default abstract class BaseBehavior {
     this.limitY = Math.floor(this.poster.stage.height())
   }
 
-  public abstract attach(widget: WidgetKind): boolean
+  public abstract attach(widget: WidgetKind): void
 }

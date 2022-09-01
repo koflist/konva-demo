@@ -2,7 +2,7 @@ import { Layer } from "konva/lib/Layer"
 import { Box, Transformer, TransformerConfig } from "konva/lib/shapes/Transformer"
 
 import KonvaPoster from "../konva"
-import { TextWidget, WidgetKind, WidgetType } from "../widgets"
+import { WidgetKind, WidgetType } from "../widgets"
 import BaseBehaivor from "./base"
 
 const BaseTransformerConfig: TransformerConfig = {
@@ -52,28 +52,17 @@ export default class TransformBehvior extends BaseBehaivor {
     this.transformListening()
   }
 
-  public override attach(widget: WidgetKind): boolean {
-    if (!widget.shape) {
-      return false
-    }
-
-    // 文字组件:不缩放|改变尺寸影响文字换行
-    if (widget.type === WidgetType.text) {
-      const textWidget = widget as TextWidget
-      const text = textWidget.shape
-      if (text) {
-        text.on("transform", () => {
-          text.setAttrs({
-            width: Math.max(text.width() * text.scaleX(), textWidget.config.render.fontSize),
-            height: Math.max(text.height() * text.scaleY(), textWidget.config.render.fontSize),
-            scaleX: 1,
-            scaleY: 1
-          })
-        })
-      }
-    }
-
-    return true
+  // 文字组件:不缩放|改变尺寸影响文字换行
+  public override attach(widget: WidgetKind) {
+    const { shape } = widget
+    shape.on("transform", () => {
+      shape.setAttrs({
+        width: Math.max(shape.width() * shape.scaleX()),
+        height: Math.max(shape.height() * shape.scaleY()),
+        scaleX: 1,
+        scaleY: 1
+      })
+    })
   }
 
   private transformBoundary(oldBox: Box, newBox: Box) {

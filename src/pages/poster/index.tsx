@@ -1,4 +1,5 @@
 import { PosterBehavior } from "@/poster/behavior"
+import { Messager, MessagerType } from "@/poster/messager"
 import { WidgetType } from "@/poster/widgets"
 import { FC, useEffect, useMemo, useState } from "react"
 import KonvaPoster, { PosterConfig } from "../../poster/konva"
@@ -15,7 +16,9 @@ const posterConfig: PosterConfig = {
       render: {
         x: 310,
         y: 670,
-        width: 100
+        width: 100,
+        height: 100,
+        rotation: 0
       },
       inject: {
         url: "https://www.baidu.com?userId={placeholder1}",
@@ -29,6 +32,7 @@ const posterConfig: PosterConfig = {
         y: 240,
         width: 50,
         height: 50,
+        rotation: 0,
         fontSize: 20
       },
       inject: {
@@ -41,7 +45,9 @@ const posterConfig: PosterConfig = {
       render: {
         x: 0,
         y: 0,
-        r: 30
+        width: 100,
+        height: 50,
+        rotation: 0 * Math.PI
       },
       inject: {
         image: "https://conan-online.fbcontent.cn/aries-oss-resource/web-assets/8706701_1do.png"
@@ -66,6 +72,9 @@ const PosterPage: FC = () => {
     poster.renderFinsh().then(() => {
       poster.stage.setContainer("#container")
       new PosterBehavior(poster)
+
+      const message = new Messager(MessagerType.parent)
+      // message.listen()
     })
   }
 

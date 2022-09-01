@@ -1,61 +1,63 @@
+import { LoadImage } from "@/pages/poster/util"
+import { SceneContext } from "konva/lib/Context"
 import { Group } from "konva/lib/Group"
 import { Image as KonvaImage } from "konva/lib/shapes/Image"
-import { LoadImage } from "../../pages/poster/util"
 import { BaseWidget, WidgetConfig, WidgetType } from "./base"
 
-type ExtraRender = {
-  r: number
-}
 type ExtraInject = {
   image: string
 }
-export type AvatarWidgetConfig = WidgetConfig<WidgetType.avatar, ExtraRender, ExtraInject>
+export type AvatarWidgetConfig = WidgetConfig<WidgetType.avatar, unknown, ExtraInject>
 
 // Widget.Avatar
 export class AvatarWidget extends BaseWidget<WidgetType.avatar, AvatarWidgetConfig, Group> {
-  private innerImgShape: KonvaImage | null
+  private innerImgShape: KonvaImage
 
   constructor(config: AvatarWidgetConfig) {
     super(config)
-    this.innerImgShape = null
+    this.innerImgShape = new KonvaImage({ image: undefined })
   }
 
-  override async renderShape() {
-    const { render, inject } = this.config
+  protected override createShape(): Group {
+    const group = new Group()
+    this.innerImgShape = new KonvaImage({ image: undefined })
+    this.innerImgShape.setAttr("widget", this)
+    group.add(this.innerImgShape)
+    return group
+  }
 
-    const group = new Group({
-      clipFunc(context) {
-        context.arc(render.x + render.r, render.y + render.r, render.r, 0, 2 * Math.PI, false)
+  protected async renderShape(group: Group, config: AvatarWidgetConfig) {
+    const { render, inject } = config
+
+    group.setAttrs({
+      clipFunc(context: SceneContext) {
+        const r = render.width / 2
+        context.arc(render.x + r, render.y + r, r, 0, 2 * Math.PI, false)
       }
     })
 
     const imageUrl = inject.image
     const avatarImage = await LoadImage(imageUrl)
-
-    this.innerImgShape = new KonvaImage({
+    this.innerImgShape.setAttrs({
       x: render.x,
       y: render.y,
-      width: render.r * 2,
-      height: render.r * 2,
+      width: render.width,
+      height: render.width,
       image: avatarImage
     })
-    this.innerImgShape.setAttr("widget", this)
-    group.add(this.innerImgShape)
-
-    return group
   }
 
   public override toObject(): AvatarWidgetConfig {
-    return this.shape
-      ? {
-          type: this.type,
-          inject: this.config.inject,
-          render: {
-            x: this.shape.x(),
-            y: this.shape.y(),
-            r: (this.shape.width() * this.shape.scaleX()) / 2
-          }
-        }
-      : this.config
+    return {
+      type: this.type,
+      inject: this.config.inject,
+      render: {
+        x: this.shape.x(),
+        y: this.shape.y(),
+        width: this.shape.width() * this.shape.scaleX(),
+        height: this.shape.height() * this.shape.scaleY(),
+        rotation: this.shape.rotation()
+      }
+    }
   }
 }

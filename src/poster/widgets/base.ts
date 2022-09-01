@@ -12,6 +12,9 @@ export enum WidgetType {
 export type RenderType<ExtraRender = unknown> = {
   x: number
   y: number
+  width: number
+  height?: number
+  rotation: number
 } & ExtraRender
 
 // Widget.Inject 数据定义
@@ -37,31 +40,47 @@ export abstract class BaseWidget<
   TShape extends WidgetShape
 > {
   // property
-  public readonly config: TConfig
-  public readonly type: T
-  public shape: TShape | null
+  public config: TConfig
+  public shape!: TShape
   public renderPromise: Promise<this>
 
   constructor(config: TConfig) {
     this.config = config
-    this.type = config.type
-    this.shape = null
 
-    this.renderPromise = this.renderShape()
+    this.renderPromise = Promise.resolve()
+      .then(() => this.createShape())
       .then((shape: TShape) => {
         this.shape = shape
         this.shape.setAttr("widget", this)
-        return this
+        return this.shape
       })
+      .then((shape) => this.renderShape(shape, this.config))
+      .then(() => this)
       .catch((error) => {
-        this.shape = null
-        console.log(error)
+        console.error(error)
         return this
       })
   }
 
+  public get type(): T {
+    return this.config.type
+  }
+
   public renderFinish(): Promise<this> {
     return this.renderPromise
+  }
+
+  public fromObject(config: TConfig): Promise<void> {
+    this.config = { ...config }
+
+    if (!this.shape) {
+      return Promise.reject(`widget is not created yet.`)
+    }
+
+    return this.renderShape(this.shape, this.config).catch((error) => {
+      console.error("fromObject error:")
+      console.error(error)
+    })
   }
 
   /**
@@ -72,9 +91,16 @@ export abstract class BaseWidget<
   public abstract toObject(): TConfig
 
   /**
+   * @func createShape
+   * @name abstract
+   * @desc 需要实现生成的图形，会自动在构造函数中调用
+   */
+  protected abstract createShape(): TShape
+
+  /**
    * @func renderShape
    * @name abstract
-   * @desc 需要实现组件的渲染，会自动在构造函数中调用
+   * @desc 需要实现图形的渲染，会自动在构造函数中调用|更新渲染中调用
    */
-  protected abstract renderShape(): Promise<TShape>
+  protected abstract renderShape(shape: TShape, config: TConfig): Promise<void>
 }

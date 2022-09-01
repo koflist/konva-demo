@@ -7,12 +7,8 @@ export default class DraggableBehvior extends BaseBehavior {
     super(poster)
   }
 
-  public override attach(widget: WidgetKind): boolean {
+  public override attach(widget: WidgetKind) {
     const { shape } = widget
-
-    if (!shape) {
-      return false
-    }
 
     shape.draggable(true)
     shape.on("dragmove", () => {
@@ -24,7 +20,5 @@ export default class DraggableBehvior extends BaseBehavior {
       shape.x(correctX)
       shape.y(correctY)
     })
-
-    return true
   }
 }

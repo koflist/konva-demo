@@ -21,11 +21,6 @@ export type PosterConfig = {
   widgets: WidgetConfig[]
 }
 
-interface DestoryWidget {
-  (widget: WidgetKind): void
-  (id: number): void
-}
-
 export default class KonvaPoster {
   public readonly stage: Stage
   public readonly layer: Layer
@@ -56,7 +51,11 @@ export default class KonvaPoster {
     this.renderPromise = this.render()
   }
 
-  // 海报渲染
+  public async renderFinsh() {
+    return this.renderPromise
+  }
+
+  // 海报渲染(背景+组件列表)
   private async render(): Promise<void> {
     await this.renderBackground()
     await this.initRenderWidgets()
@@ -77,14 +76,14 @@ export default class KonvaPoster {
     this.layer.add(KonvaBgImage)
   }
 
-  // 初始化渲染 widgetList
+  // 初始化渲染组件列表
   private async initRenderWidgets() {
-    const p: Promise<void>[] = this.config.widgets.map((config) => this.renderWidget(config))
+    const p: Promise<void>[] = this.config.widgets.map((config) => this.appnedWidget(config))
     return Promise.allSettled(p)
   }
 
-  // 渲染 widget
-  public renderWidget(config: WidgetConfig): Promise<void> {
+  // 渲染 widget 并添加到 poster上
+  public appnedWidget(config: WidgetConfig): Promise<void> {
     const widget = this.createWidget(config)
 
     if (!widget) {
@@ -137,9 +136,5 @@ export default class KonvaPoster {
       this.renderedWidgets[index].shape?.destroy()
       this.renderedWidgets.splice(index, 1)
     }
-  }
-
-  public async renderFinsh() {
-    return this.renderPromise
   }
 }

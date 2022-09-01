@@ -2,8 +2,6 @@ import { Text } from "konva/lib/shapes/Text"
 import { BaseWidget, WidgetConfig, WidgetType } from "./base"
 
 type ExtraRender = {
-  width: number
-  height: number
   fontSize: number
 }
 type ExtraInject = {
@@ -18,32 +16,36 @@ export class TextWidget extends BaseWidget<WidgetType.text, TextWidgetConfig, Te
     super(config)
   }
 
-  public override async renderShape() {
-    const { render, inject } = this.config
+  protected override createShape(): Text {
+    return new Text({})
+  }
 
-    return new Text({
+  public override async renderShape(text: Text, config: TextWidgetConfig) {
+    const { render, inject } = config
+
+    text.setAttrs({
       text: inject.text,
       x: render.x,
       y: render.y,
-      fontSize: render.fontSize,
       width: render.width,
-      height: render.height
+      height: render.height,
+      rotation: render.rotation,
+      fontSize: render.fontSize
     })
   }
 
   public override toObject(): TextWidgetConfig {
-    return this.shape
-      ? {
-          type: this.type,
-          inject: this.config.inject,
-          render: {
-            x: this.shape.x(),
-            y: this.shape.y(),
-            width: this.shape.width() * this.shape.scaleX(),
-            height: this.shape.height() * this.shape.scaleY(),
-            fontSize: this.config.render.fontSize
-          }
-        }
-      : this.config
+    return {
+      type: this.type,
+      inject: this.config.inject,
+      render: {
+        x: this.shape.x(),
+        y: this.shape.y(),
+        width: this.shape.width() * this.shape.scaleX(),
+        height: this.shape.height() * this.shape.scaleY(),
+        rotation: this.shape.rotation(),
+        fontSize: this.config.render.fontSize
+      }
+    }
   }
 }
