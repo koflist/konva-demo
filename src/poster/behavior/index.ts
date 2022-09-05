@@ -34,7 +34,7 @@ export class PosterBehavior implements IPosterBehavior {
     // this.management?.trigger(event, payload)
   }
 
-  public listen(callback: EventFunc) {
-    this.management?.listen(callback)
+  public listen(callback: Function) {
+    this.management?.listen()
   }
 }

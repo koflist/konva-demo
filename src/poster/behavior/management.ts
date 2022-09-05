@@ -1,18 +1,17 @@
 import { debounce } from "lodash-es"
 
 import KonvaPoster from "../konva"
-import { EventFunc, EventType } from "../messager"
 import { WidgetConfig, WidgetKind } from "../widgets"
 import BaseBehavior from "./base"
 
 export default class ManagementBehvior extends BaseBehavior {
   private changeHandler: Function
-  private listeners: EventFunc[]
+  // private listeners: EventFunc[]
 
   constructor(poster: KonvaPoster) {
     super(poster)
 
-    this.listeners = []
+    // this.listeners = []
     this.changeHandler = debounce((widget: WidgetKind) => this.output(widget), 200)
   }
 
@@ -22,9 +21,7 @@ export default class ManagementBehvior extends BaseBehavior {
     })
   }
 
-  public listen(callback: EventFunc) {
-    this.listeners.push(callback)
-  }
+  public listen() {}
 
   // public trigger: EventFunc = (type, payload) => {
   //   switch (type) {
@@ -47,9 +44,9 @@ export default class ManagementBehvior extends BaseBehavior {
 
   private output(widget: WidgetKind) {
     const widgetConfig = widget.toObject()
-    for (const func of this.listeners) {
-      func(EventType.output, widgetConfig)
-    }
+    // for (const func of this.listeners) {
+    //   // func(EventType.output, widgetConfig)
+    // }
   }
 
   private update(config: WidgetConfig): void {

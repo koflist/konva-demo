@@ -1,5 +1,4 @@
 import { PosterBehavior } from "@/poster/behavior"
-import { Messager, MessagerType } from "@/poster/messager"
 import { WidgetType } from "@/poster/widgets"
 import { FC, useEffect, useMemo, useState } from "react"
 import KonvaPoster, { PosterConfig } from "../../poster/konva"
@@ -73,7 +72,7 @@ const PosterPage: FC = () => {
       poster.stage.setContainer("#container")
       new PosterBehavior(poster)
 
-      const message = new Messager(MessagerType.parent)
+      // const message = new Messager(MessagerType.parent)
       // message.listen()
     })
   }
