@@ -28,14 +28,14 @@ export class Messager implements IMessager {
 
   private type: typeof Messager.Parent | typeof Messager.Child
   private tasks: Function[]
-  private onceListeners: Record<EventEnum, EventCallback[]>
+  // private onceListeners: Record<EventEnum, EventCallback[]>
   private listeners: { -readonly [K in keyof EventType]?: EventCallback[] }
 
   constructor(type: typeof Messager.Parent | typeof Messager.Child) {
     this.type = type
     this.tasks = []
     this.listeners = {}
-    this.onceListeners = {EventEnum.}
+    // this.onceListeners = {EventEnum.}
     this.init()
   }
 
@@ -51,17 +51,13 @@ export class Messager implements IMessager {
     }
   }
 
-  public once(event: string, callback: Function) {
+  public once(event: string, callback: Function) {}
 
-  }
+  public on(event: string, callback: Function) {}
 
-  public on(event: string, callback: Function) {
-
-  }
-
-  public emit(event: string, payload: any) {
-    if(this.type == )
-  }
+  // public emit(event: string, payload: any) {
+  //   if(this.type == )
+  // }
 
   public trigger(event: keyof EventType, payload?: any) {}
 
