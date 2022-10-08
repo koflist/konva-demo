@@ -1,3 +1,4 @@
+import { Button } from "antd"
 import { FC, KeyboardEvent, useCallback, useState } from "react"
 import { BaseEditor, createEditor, Descendant, Editor, Transforms } from "slate"
 import { Editable, ReactEditor, RenderElementProps, Slate, withReact } from "slate-react"
@@ -61,6 +62,7 @@ const StalePage: FC = () => {
 
   return (
     <Slate editor={editor} value={initalValue}>
+      <Button>123</Button>
       <Editable renderElement={renderElement} onKeyDown={onKeyDown}></Editable>
     </Slate>
   )

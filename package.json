@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.18.9",
+    "@umijs/plugin-antd": "^0.15.2",
+    "antd": "^4.23.4",
     "easyqrcodejs": "^4.4.12",
     "konva": "^8.3.11",
     "lodash-es": "^4.17.21",
