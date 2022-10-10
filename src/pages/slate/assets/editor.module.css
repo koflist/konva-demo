@@ -1,0 +1,13 @@
+.editor_wrapper {
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  margin: 20px;
+  border: 1px solid #cccccc
+}
+
+.editor_container {
+  position: relative;
+  padding: 2px 4px;
+  min-height: 80px;
+}
