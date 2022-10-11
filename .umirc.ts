@@ -1,4 +1,4 @@
 export default {
-  npmClient: "npm",
-  scripts: [`//unpkg.com/mathlive`]
+  npmClient: "npm"
+  // scripts: [`//unpkg.com/mathlive`]
 }

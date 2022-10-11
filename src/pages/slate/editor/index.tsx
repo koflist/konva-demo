@@ -5,11 +5,16 @@ import { Button } from "antd"
 import AriesToolbar from "../toolbar"
 import { RenderElement } from "../render"
 import { ElementTypes } from "../types/element"
+import { renderMathInElement, renderMathInDocument } from "mathlive"
 
 import styles from "../assets/editor.module.css"
 
 import withImages from "../plugins/withImage"
 import MathView from "react-math-view"
+// import { MathfieldElement } from "mathlive"
+
+// const mfe = new MathfieldElement()
+// mfe.value = "x=\frac{-bpm sqrt{b^2-4ac}}{2a}"
 
 const initialValue: Descendant[] = [
   {
@@ -33,18 +38,36 @@ const AriesEditor: FC<Props> = () => {
   const render = useCallback(RenderElement, [])
 
   const onClick = () => {
-    Transforms.insertNodes(editor, {
-      type: ElementTypes.latex,
-      children: [{ text: "" }]
-    })
+    // Transforms.insertNodes(editor, {
+    //   type: ElementTypes.latex,
+    //   value: "\\xrightarrow[\\Delta]{\\text{abcd}}",
+    //   children: [{ text: "" }]
+    // })
+    setValue("\tan(x) = \frac{sin\theta}{cos\theta}")
   }
 
+  useEffect(() => {
+    // @ts-ignore
+    setTimeout(() => {
+      setValue("\\xrightarrow[\\Delta]{\\text{abcd}}")
+    }, 2000)
+  }, [])
+
+  const onChange = (v: Descendant[]) => {
+    console.log(v)
+    setEditorValue(v)
+  }
+
+  useEffect(() => {
+    // renderMathInDocument()
+  }, [editorValue])
+
   return (
-    <div className={styles["editor_wrapper"]}>
-      <Slate editor={editor} value={editorValue} onChange={(v) => setEditorValue(v)}>
+    <div className={styles["editor_wrapper"]} id="good">
+      <MathView>{value}</MathView>
+      <Button onClick={onClick}>click</Button>
+      <Slate editor={editor} value={editorValue} onChange={onChange}>
         <AriesToolbar></AriesToolbar>
-        <Button onClick={onClick}>123</Button>
-        <MathView contentEditable={false} value={value}></MathView>
         <Editable renderElement={render} className={styles["editor_container"]}></Editable>
       </Slate>
     </div>

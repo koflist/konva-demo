@@ -15,7 +15,7 @@ export type ParagraphElement = {
 // 公式 - <mathlive>
 export type LatexElement = {
   type: ElementTypes.latex
-  // value: string
+  value?: string
   children: [EmptyText]
 }
 
